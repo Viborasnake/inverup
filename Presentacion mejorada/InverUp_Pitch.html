@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InverUp · Plan Estratégico de Rescate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070B14;
+  --ink: #ffffff;
+  --muted: #94a3b8;
+  --hair: rgba(255, 255, 255, 0.06);
+  --green: #10b981;
+  --green-dk: #047857;
+  --green-tint: rgba(16, 185, 129, 0.12);
+  --red: #f43f5e;
+  --red-tint: rgba(244, 63, 94, 0.12);
+  --card: rgba(20, 26, 38, 0.65);
+  --disp: 'Space Grotesk', sans-serif;
+  --body: 'Inter', sans-serif;
+  --mono: 'Space Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { 
+  height: 100%; 
+  background-color: var(--bg);
+  background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  color: var(--ink); 
+  font-family: var(--body); 
+  overflow: hidden; 
+  -webkit-font-smoothing: antialiased; 
+  /* Branded Pointer Cursor */
+  cursor: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4L11.5 20L14 14L20 11.5L4 4Z" fill="%2310b981" stroke="%23ffffff" stroke-width="1.5" stroke-linejoin="round"/></svg>') 4 4, auto;
+}
+a, a *, button, .badge {
+  cursor: pointer !important;
+}
+
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+/* Ambient Glows */
+.ambient { position: fixed; border-radius: 50%; filter: blur(140px); z-index: 0; opacity: 0.35; pointer-events: none; transition: all 2s ease; }
+.ambient-1 { top: -20%; right: -10%; width: 700px; height: 700px; background: var(--green); }
+.ambient-2 { bottom: -20%; left: -10%; width: 800px; height: 800px; background: #3b82f6; opacity: 0.15; }
+
+/* Progress & Timer */
+#bar { position: fixed; top: 0; left: 0; height: 3px; width: 100%; background: var(--hair); z-index: 60; }
+#bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+.top-hud { position: fixed; top: 16px; left: 32px; right: 32px; display: flex; justify-content: space-between; z-index: 60; font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; align-items: center; }
+.speaker-tag { opacity: 0; transition: all 0.4s ease; padding: 6px 14px; border-radius: 99px; background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); border: 1px solid var(--hair); color: var(--ink); font-weight: 700; letter-spacing: 0.15em; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.speaker-tag.active { opacity: 1; transform: translateY(0); }
+.timer { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity 0.4s; }
+.timer.running { opacity: 1; color: var(--green); }
+.timer.warning { color: var(--red); text-shadow: 0 0 8px rgba(244,63,94,0.5); }
+
+/* Slides & Staggered Animations */
+#deck { position: relative; height: 100%; width: 100%; z-index: 10; }
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(40px, 6vw, 100px); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease; overflow: auto; }
+.slide.active { opacity: 1; visibility: visible; pointer-events: auto; }
+.wrap { width: 100%; max-width: 1160px; margin: 0 auto; position: relative; }
+
+/* Animate children of .wrap staggering */
+.slide > .wrap > * { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.slide.active > .wrap > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.1s; }
+.slide.active > .wrap > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.2s; }
+.slide.active > .wrap > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.3s; }
+.slide.active > .wrap > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.4s; }
+.slide.active > .wrap > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.5s; }
+
+/* Typography */
+h1 { font-family: var(--disp); font-weight: 700; font-size: clamp(48px, 7vw, 76px); line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 20px; }
+h2 { font-family: var(--disp); font-weight: 700; font-size: clamp(32px, 5vw, 52px); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 36px; }
+h3 { font-family: var(--disp); font-weight: 600; font-size: 20px; margin-bottom: 8px; letter-spacing: -0.01em; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+p { font-size: clamp(16px, 1.6vw, 18px); line-height: 1.6; color: var(--muted); }
+.highlight { color: var(--ink); font-weight: 600; }
+.green { color: var(--green); } .red { color: var(--red); }
+.text-gradient { background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.green-gradient { background: linear-gradient(135deg, #34d399 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.red-gradient { background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; color: var(--green); text-transform: uppercase; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 10px; font-weight: 700; }
+.kicker::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
+
+/* Ultra-Premium Glassmorphism & 3D Cards */
+.grid { display: grid; gap: 24px; }
+.g2 { grid-template-columns: repeat(2, 1fr); }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+
+.card { 
+  position: relative;
+  background: linear-gradient(145deg, rgba(30,41,59,0.85) 0%, rgba(15,23,42,0.65) 100%);
+  background-image: 
+    linear-gradient(145deg, rgba(30,41,59,0.7) 0%, rgba(15,23,42,0.5) 100%),
+    url('data:image/svg+xml;utf8,<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L0 0 0 12" fill="none" stroke="rgba(255,255,255,0.02)"/></svg>');
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.05); 
+  border-top: 1px solid rgba(255,255,255,0.25);
+  border-left: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px; 
+  padding: 32px; 
+  box-shadow: 
+    0 10px 30px -10px rgba(0,0,0,0.8), 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 0 20px rgba(255,255,255,0.02);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.card::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(800px circle at top left, rgba(255,255,255,0.06), transparent 40%);
+}
+
+.card:hover { 
+  transform: translateY(-8px) scale(1.02); 
+  box-shadow: 
+    0 20px 40px -10px rgba(0,0,0,0.8),
+    0 0 20px rgba(255,255,255,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.2); 
+  border-color: rgba(255,255,255,0.15); 
+}
+
+.card.tint { 
+  background: linear-gradient(145deg, rgba(16,185,129,0.15) 0%, rgba(4,120,87,0.05) 100%);
+  border-top: 1px solid rgba(16,185,129,0.5); 
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(16,185,129,0.3);
+}
+.card.tint::before { background: radial-gradient(800px circle at top left, rgba(16,185,129,0.15), transparent 40%); }
+.card.tint:hover { box-shadow: 0 20px 40px -10px rgba(16,185,129,0.2), inset 0 1px 0 rgba(16,185,129,0.4); }
+
+.card.alert { 
+  background: linear-gradient(145deg, rgba(244,63,94,0.15) 0%, rgba(159,18,57,0.05) 100%);
+  border-top: 1px solid rgba(244,63,94,0.5); 
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(244,63,94,0.3);
+}
+.card.alert::before { background: radial-gradient(800px circle at top left, rgba(244,63,94,0.15), transparent 40%); }
+.card.alert:hover { box-shadow: 0 20px 40px -10px rgba(244,63,94,0.2), inset 0 1px 0 rgba(244,63,94,0.4); }
+
+.stat-huge { font-family: var(--mono); font-weight: 700; font-size: clamp(48px, 6vw, 72px); line-height: 1; margin-bottom: 16px; letter-spacing: -0.04em; }
+
+/* Badges & Lists */
+.badge { display: inline-block; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-family: var(--mono); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); margin-bottom: 20px; border: 1px solid var(--hair); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.badge.b-green { color: var(--green); border-color: rgba(16,185,129,0.5); box-shadow: 0 0 16px rgba(16,185,129,0.3); }
+.badge.b-red { color: var(--red); border-color: rgba(244,63,94,0.5); box-shadow: 0 0 16px rgba(244,63,94,0.3); }
+.list-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; font-size: 16px; color: rgba(255,255,255,0.9); line-height: 1.5; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.list-item::before { content: "→"; color: var(--green); font-family: var(--mono); font-weight: 700; filter: drop-shadow(0 0 6px var(--green)); }
+
+/* Phone Mockup Premium */
+.mockup-container { display: flex; justify-content: center; gap: 50px; align-items: center; margin-top: 20px; perspective: 1000px; }
+.phone { width: 280px; height: 580px; background: #ffffff; border-radius: 40px; padding: 12px; border: 4px solid #475569; position: relative; color: #0f172a; font-family: var(--body); box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 6px #1e293b; transform: rotateY(-5deg) rotateX(5deg); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.phone:hover { transform: rotateY(0deg) rotateX(0deg) scale(1.02); }
+.phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 100px; height: 28px; background: #1e293b; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; z-index: 2; }
+.phone-ui-hoy { padding-top: 80px; text-align: center; }
+.phone-ui-sprint { padding-top: 60px; }
+.phone .saldo-cero { font-family: var(--disp); font-size: 48px; font-weight: 700; margin-bottom: 12px; color: #0f172a; letter-spacing:-0.03em; }
+.phone .legal-text { font-size: 11px; color: #64748b; background: #f1f5f9; padding: 16px; border-radius: 12px; margin-top: 60px; text-align: left; border-left: 4px solid #cbd5e1; }
+.sprint-card { background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%); border-radius: 20px; padding: 24px; border: 1px solid #a7f3d0; margin-top: 20px; box-shadow: 0 10px 20px rgba(16,185,129,0.1); }
+.sprint-card h4 { color: #047857; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; font-weight: 700;}
+.sprint-card .monto { font-family: var(--disp); font-size: 36px; font-weight: 700; color: #0f172a; margin-bottom: 28px; letter-spacing: -0.02em;}
+.tracker { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 20px; }
+.tracker-dot { width: 14px; height: 14px; border-radius: 50%; background: #cbd5e1; }
+.tracker-dot.active { background: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.2); animation: pulse 2s infinite; }
+.tracker-line { flex: 1; height: 3px; background: #e2e8f0; border-radius: 2px;}
+.sprint-eta { font-size: 12px; color: #047857; font-weight: 600; background: #ffffff; padding: 10px; border-radius: 8px; text-align: center; border: 1px dashed #10b981; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 70% { box-shadow: 0 0 0 10px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+
+/* Formulas */
+.formula-box { background: rgba(0,0,0,0.3); padding: 24px; border-radius: 16px; font-family: var(--mono); font-size: 15px; text-align: center; margin-bottom: 32px; border: 1px dashed rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
+.rank-row { display: grid; grid-template-columns: 40px 1fr 60px; gap: 16px; align-items: center; background: var(--card); padding: 16px 24px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--hair); transition: transform 0.2s; }
+.rank-row:hover { transform: translateX(8px); }
+.rank-row.top { border-color: var(--green); background: rgba(16,185,129,0.08); box-shadow: inset 4px 0 0 var(--green); }
+.rank-score { font-family: var(--mono); font-weight: 700; color: var(--green); text-align: right; font-size: 18px;}
+
+/* Controls & Cover */
+.nav-hint { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; color: var(--muted); opacity: 0.4; letter-spacing: 0.2em; z-index: 50;}
+.cover-academics { margin-top: auto; border-top: 1px solid var(--hair); padding-top: 40px; font-size: 14px; color: var(--muted); display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+
+</style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<div id="bar"><span></span></div>
+<div class="top-hud">
+  <div>INVERUP · RESCATE <span style="margin:0 12px;opacity:0.3">|</span> <span class="speaker-tag" id="ui-speaker"></span></div>
+  <div style="display:flex;align-items:center;gap:24px;">
+    <div class="timer" id="ui-timer">10:00</div>
+    <div id="ui-counter" style="opacity:0.6;">01 / 10</div>
+  </div>
+</div>
+
+<div id="deck">
+
+  <!-- SLIDE 1: PORTADA -->
+  <section class="slide active" data-speaker="VALE">
+    <div class="wrap" style="height: 100%; display: flex; flex-direction: column;">
+      <div style="margin-top: 100px; position: relative;">
+        <div class="kicker">Pitch Académico · 10 min</div>
+        <h1 class="text-gradient">Plan Estratégico<br>de Rescate</h1>
+        <p style="max-width: 700px; font-size: 22px; color: rgba(255,255,255,0.9); margin-top: 24px; line-height: 1.5;">
+          Recuperar la confianza en el momento del retiro: una intervención metodológica ágil para hacer visible el dinero, explicar el proceso y proteger la continuidad de inversión de InverUp.
+        </p>
+
+        <div style="position: absolute; right: 20px; top: -20px; width: 360px; height: 360px; pointer-events: none; opacity: 0.95; animation: float 6s ease-in-out infinite;">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; filter: drop-shadow(0 20px 40px rgba(16,185,129,0.3));">
+            <!-- Grid Lines -->
+            <path d="M10 90 L90 90" stroke="rgba(255,255,255,0.1)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10 90 L10 10" stroke="rgba(255,255,255,0.1)" stroke-width="2" stroke-linecap="round"/>
+            <!-- Trend Line -->
+            <path d="M10 80 L30 65 L50 75 L70 40 L90 20" stroke="url(#chartGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Area Fill -->
+            <path d="M10 80 L30 65 L50 75 L70 40 L90 20 L90 90 L10 90 Z" fill="url(#areaGrad)"/>
+            <!-- Nodes -->
+            <circle cx="30" cy="65" r="3" fill="#10b981"/>
+            <circle cx="50" cy="75" r="3" fill="#10b981"/>
+            <circle cx="70" cy="40" r="3" fill="#10b981"/>
+            <circle cx="90" cy="20" r="5" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
+            <defs>
+              <linearGradient id="chartGrad" x1="10" y1="80" x2="90" y2="20" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#34d399"/>
+                <stop offset="100%" stop-color="#047857"/>
+              </linearGradient>
+              <linearGradient id="areaGrad" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="rgba(16,185,129,0.4)"/>
+                <stop offset="100%" stop-color="rgba(16,185,129,0)"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="cover-academics">
+        <div>
+          <b style="color:var(--ink); font-size:16px; margin-bottom:12px; display:block;">Célula de Liderazgo (Tríada)</b>
+          Erick Fuentealba · Tamara Valdivia<br>Valeria Nieto · Cristian Pizarro
+        </div>
+        <div>
+          <b style="color:var(--ink); font-size:16px; margin-bottom:12px; display:block;">FEN Universidad de Chile</b>
+          Diplomado Estrategia y Experiencia de Prod. en Era IA<br>
+          Cátedra: Metodologías Ágiles y Operación de Equipos
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: CRISIS -->
+  <section class="slide" data-speaker="VALE">
+    <div class="wrap">
+      <div class="kicker">1. Evidencia y Discovery</div>
+      <h2>La crisis de "Futuro Joven" en 45 días</h2>
+      <p style="margin-bottom: 48px; max-width: 860px;">El retiro de dinero pasó de ser una fricción de usabilidad a una crisis de confianza que amenaza directamente las metas de financiamiento del segundo semestre (H2).</p>
+      
+      <div class="grid g3">
+        <div class="card alert">
+          <div class="badge b-red">Fuga de Capital</div>
+          <div class="stat-huge red-gradient">-30%</div>
+          <p class="highlight">Usuarios activos cerraron su cuenta.</p>
+          <p style="font-size:14px; margin-top:12px;">El 62% había intentado retirar fondos en los 14 días previos.</p>
+        </div>
+        <div class="card alert">
+          <div class="badge b-red">Fricción Crítica</div>
+          <div class="stat-huge red-gradient">50%</div>
+          <p class="highlight">Abandona la triple validación.</p>
+          <p style="font-size:14px; margin-top:12px;">Principal dolor: foto de la cédula exigida para retiros simples.</p>
+        </div>
+        <div class="card">
+          <div class="badge">Colapso Operativo</div>
+          <div class="stat-huge text-gradient">1.850</div>
+          <p class="highlight">Tickets de soporte al día.</p>
+          <p style="font-size:14px; margin-top:12px;">38% reclama por "saldo en $0 / mi dinero desapareció".</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: QUIEBRE -->
+  <section class="slide" data-speaker="VALE">
+    <div class="wrap">
+      <div class="kicker">Anatomía del Quiebre</div>
+      <h2>El proceso cumple la ley, pero aterroriza al usuario</h2>
+      
+      <div class="grid g4" style="margin-bottom: 48px;">
+        <div class="card" style="padding: 24px;">
+          <div class="badge">1. Validar</div>
+          <p>Clave + SMS + Cédula.<br><span class="red">50% abandona.</span></p>
+        </div>
+        <div class="card alert" style="padding: 24px; border-top:2px solid var(--red);">
+          <div class="badge b-red">2. Confirmar</div>
+          <p>Saldo cambia abruptamente a $0.<br><span class="highlight">Pánico inmediato.</span></p>
+        </div>
+        <div class="card" style="padding: 24px;">
+          <div class="badge">3. Esperar (T+2)</div>
+          <div style="font-family:var(--mono); font-size:10px; color:var(--muted); margin:-14px 0 12px 0;">*T+2: Tiempo de liquidación (2 días hábiles)</div>
+          <p>48h hábiles en total silencio.<br>Reclamos a CMF.</p>
+          <div style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:8px;">*CMF: Comisión para el Mercado Financiero</div>
+        </div>
+        <div class="card" style="padding: 24px;">
+          <div class="badge">4. El Impacto</div>
+          <p>Dinero llega, pero se pierde la confianza.<br><span class="red">Abandono silencioso.</span></p>
+        </div>
+      </div>
+
+      <div class="card tint" style="border-left: 6px solid var(--green); padding-left: 40px;">
+        <p style="font-size: 26px; color: var(--ink); font-style: italic; font-family: var(--disp); line-height: 1.4;">"No me molesta tanto esperar por la regulación; me molesta no saber qué está pasando con mi plata."</p>
+        <p style="margin-top: 16px; font-family: var(--mono); font-size: 13px; color: var(--green);">— Diego (Entrevista Sintética, Segmento Sub-30)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: MAPA DE EMPATIA -->
+  <section class="slide" data-speaker="TAMI">
+    <div class="wrap">
+      <div class="kicker">2. Mapeo del Usuario</div>
+      <h2>Mapa de Empatía: Arquetipo Sub-30</h2>
+      
+      <div class="grid g2">
+        <div class="card" style="border-top: 3px solid var(--green);">
+          <h3 class="green">Piensa y Siente</h3>
+          <div class="list-item">Pánico de robo: asume que el sistema falló.</div>
+          <div class="list-item">Se siente tratado como un delincuente por subir el carnet.</div>
+          <div class="list-item">Ansiedad financiera extrema por gastos inminentes.</div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--green);">
+          <h3 class="green">Ve</h3>
+          <div class="list-item">El shock visual del Saldo en $0.</div>
+          <div class="list-item">Muros de texto con jerga legal de los años 90.</div>
+          <div class="list-item">Fintual y Racional entregando en 1 día sin fricciones.</div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--green);">
+          <h3 class="green">Dice y Hace</h3>
+          <div class="list-item">Reingreso compulsivo: refresca la app >4 veces al día.</div>
+          <div class="list-item">Llama colapsando el Call Center y amenaza ir a la CMF.</div>
+          <div class="list-item">Aplica "abandono silencioso": migra fondos y pausa aportes.</div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--green);">
+          <h3 class="green">Escucha</h3>
+          <div class="list-item">"Es un cacho sacar la plata de ahí" (Boca a boca).</div>
+          <div class="list-item">Silencio absoluto de la plataforma (cero notificaciones).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: NSM Y GUARDRAILS -->
+  <section class="slide" data-speaker="TAMI">
+    <div class="wrap">
+      <div class="kicker">El Norte Estratégico</div>
+      <h2>North Star Metric & Guardrails</h2>
+      <p style="margin-bottom: 40px; max-width: 860px;">El problema no termina cuando el dinero llega. Si el usuario retira todo o pausa sus aportes automáticos, la cuenta abierta es una métrica de vanidad.</p>
+
+      <div class="card tint" style="text-align: center; padding: 48px; margin-bottom: 32px; box-shadow: 0 0 60px rgba(16,185,129,0.15);">
+        <div class="badge b-green" style="font-size: 14px; margin-bottom: 24px;">North Star Metric</div>
+        <h1 class="green-gradient" style="margin-bottom: 12px; font-size: 48px;">Tasa de Continuidad de Inversión (TCI-30)</h1>
+        <p style="font-size: 20px; color: var(--ink);">% de usuarios que, a 30 días de un retiro, mantienen saldo invertido o un nuevo aporte.</p>
+      </div>
+
+      <div class="grid g2">
+        <div class="card alert" style="display:flex; align-items:center; gap: 24px;">
+          <div class="stat-huge red-gradient" style="margin:0;">0%</div>
+          <div><b style="color:var(--ink); font-size:18px;">Incremento de Fraude</b><br><span style="font-size:15px; color:var(--muted);">Guardrail 1: Seguridad intacta.</span></div>
+        </div>
+        <div class="card alert" style="display:flex; align-items:center; gap: 24px;">
+          <div class="stat-huge red-gradient" style="margin:0;">100%</div>
+          <div>
+            <b style="color:var(--ink); font-size:18px;">Cumplimiento T+2</b>
+            <span style="font-size:10px; color:var(--green); font-family:var(--mono); margin-left:8px; border:1px solid rgba(16,185,129,0.3); padding:2px 6px; border-radius:4px; background:rgba(16,185,129,0.1); vertical-align:middle;">*2 DÍAS HÁBILES</span><br>
+            <span style="font-size:15px; color:var(--muted);">Guardrail 2: Regulación CMF estricta.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: STAKEHOLDERS -->
+  <section class="slide" data-speaker="CRISTIAN">
+    <div class="wrap">
+      <div class="kicker">3. Gobernanza y Política</div>
+      <h2>Matriz de Poder e Interés: Táctica "No Oposición"</h2>
+      
+      <div style="display: grid; grid-template-columns: 50px 1fr 1fr; grid-template-rows: 1fr 1fr 50px; max-width: 960px; height: 500px; margin: 0 auto;">
+        
+        <!-- Y Axis -->
+        <div style="grid-column: 1; grid-row: 1 / 3; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div style="position: absolute; right: 10px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.2);"></div>
+          <div style="position: absolute; right: 6px; top: -2px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.5);"></div>
+          <div style="writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--mono); font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.25em; white-space: nowrap; margin-right: 25px;">PODER</div>
+        </div>
+
+        <!-- X Axis -->
+        <div style="grid-column: 2 / 4; grid-row: 3; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div style="position: absolute; top: 10px; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.2);"></div>
+          <div style="position: absolute; top: 6px; right: -2px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 10px solid rgba(255,255,255,0.5);"></div>
+          <div style="font-family: var(--mono); font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.25em; margin-top: 25px;">INTERÉS</div>
+        </div>
+
+        <!-- Q1 -->
+        <div style="grid-column: 2; grid-row: 1; border-right: 1px dashed rgba(255,255,255,0.15); border-bottom: 1px dashed rgba(255,255,255,0.15); padding: 0 20px 20px 20px;">
+          <div class="card" style="height: 100%; border-top: 4px solid var(--red); background: rgba(244,63,94,0.05); position: relative;">
+            <div style="position:absolute; top:16px; right:20px; font-family:var(--mono); font-size:10px; color:var(--red); font-weight:700;">MANTENER SATISFECHO</div>
+            <h3 style="margin-top:4px;">Gerente de Riesgo</h3>
+            <div style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-bottom: 8px;">Insight: Entrevista 1:1 (Comité)</div>
+            <p style="font-size: 14px; margin-top:4px; line-height: 1.4;">Teme un alza de fraudes y vetará tajantemente si se intenta remover el SMS o Cédula actual.</p>
+            <div style="margin-top:12px; font-size: 14px; color:var(--ink);"><b>Estrategia:</b> No Oposición. El Sprint 1 NO tocará seguridad.</div>
+          </div>
+        </div>
+        
+        <!-- Q2 -->
+        <div style="grid-column: 3; grid-row: 1; border-bottom: 1px dashed rgba(255,255,255,0.15); padding: 0 0 20px 20px;">
+          <div class="card" style="height: 100%; border-top: 4px solid var(--green); background: rgba(16,185,129,0.05); position: relative;">
+            <div style="position:absolute; top:16px; right:20px; font-family:var(--mono); font-size:10px; color:var(--green); font-weight:700;">GESTIONAR ATENTAMENTE</div>
+            <h3 style="margin-top:4px;">CFO (Finanzas)</h3>
+            <div style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-bottom: 8px;">Insight: Revisión de OKRs Anuales</div>
+            <p style="font-size: 14px; margin-top:4px; line-height: 1.4;">Desesperado por frenar el sangrado de AUM (Activos bajo adm.) sin asignar presupuesto extra de desarrollo.</p>
+            <div style="margin-top:16px; font-size: 14px; color:var(--ink);"><b>Estrategia:</b> ROI Inmediato. Frenar fuga vía UI en 3 semanas.</div>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div style="grid-column: 2; grid-row: 2; border-right: 1px dashed rgba(255,255,255,0.15); padding: 20px 20px 0 20px;">
+          <div style="height: 100%; display:flex; align-items:center; justify-content:center; opacity: 0.2;">
+            <div style="font-family:var(--mono); font-size:12px; text-align:center;">MANTENER MONITOREADO<br>(Sin stakeholders críticos)</div>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div style="grid-column: 3; grid-row: 2; padding: 20px 0 0 20px;">
+          <div class="card" style="height: 100%; border-top: 4px solid var(--green); position: relative;">
+            <div style="position:absolute; top:16px; right:20px; font-family:var(--mono); font-size:10px; color:var(--muted); font-weight:700;">MANTENER INFORMADO</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top: 20px;">
+              <div>
+                <h3 style="font-size: 17px;">Ingeniería</h3>
+                <div style="font-family:var(--mono); font-size:9px; color:var(--muted); margin-bottom: 6px;">Insight: Grooming de Backlog</div>
+                <p style="font-size: 13px; margin-top:4px; line-height: 1.4;">Sin capacidad (90 hh). Prohibido tocar el *Core Legacy*.</p>
+                <div style="margin-top:10px; font-size: 13px; color:var(--ink);"><b>Táctica:</b> 100% UI.</div>
+              </div>
+              <div>
+                <h3 style="font-size: 17px;">Gerente CX</h3>
+                <div style="font-family:var(--mono); font-size:9px; color:var(--muted); margin-bottom: 6px;">Insight: Data de Zendesk</div>
+                <p style="font-size: 13px; margin-top:4px; line-height: 1.4;">Equipo colapsado por tickets de soporte en retiros.</p>
+                <div style="margin-top:10px; font-size: 13px; color:var(--ink);"><b>Táctica:</b> Bajar ansiedad.</div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: GOBERNANZA IA -->
+  <section class="slide" data-speaker="CRISTIAN">
+    <div class="wrap">
+      <div class="kicker">Gobernanza de Datos e IA</div>
+      <h2>DoR y DoD Automatizados</h2>
+      <p style="margin-bottom: 40px; max-width: 860px;">Para escalar el refinamiento de experiencia (ej. adaptar lenguaje legal al tono Sub-30), implementamos controles estrictos de <i>Human-in-the-Loop</i> y prevención de alucinaciones.</p>
+
+      <div class="grid g2">
+        <div class="card" style="border-top: 3px solid #64748b;">
+          <h3 class="highlight">Definition of Ready (DoR)</h3>
+          <div style="font-family:var(--mono); font-size:11px; color:rgba(255,255,255,0.4); margin:-4px 0 16px 0; letter-spacing:0.05em;">*Criterios técnicos para iniciar desarrollo</div>
+          <div class="list-item">Fuente normativa oficial adjunta (Reglamento CMF).</div>
+          <div class="list-item">Cero envío de Datos Personales (PII) a IA externa.</div>
+          <div class="list-item">Editor humano de Compliance pre-asignado al ticket.</div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--green); background: rgba(16,185,129,0.03);">
+          <h3 class="green">Definition of Done (DoD)</h3>
+          <div style="font-family:var(--mono); font-size:11px; color:rgba(16,185,129,0.5); margin:-4px 0 16px 0; letter-spacing:0.05em;">*Criterios de calidad para liberar a producción</div>
+          <div class="list-item">Firma digital obligatoria de Compliance en copies.</div>
+          <div class="list-item">Prueba anti-alucinación: Forzar a la IA a inventar un plazo para validar el filtro.</div>
+          <div class="list-item">Check de PM confirmando 0% fraude en QA.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: PRIORIZACION -->
+  <section class="slide" data-speaker="ERICK">
+    <div class="wrap">
+      <div class="kicker">4. Priorización y Tablero</div>
+      <h2>Modelo Ponderado Basado en Datos</h2>
+      
+      <div class="formula-box">
+        <span style="color:var(--muted)">Puntuación = </span>
+        <span class="green-gradient" style="font-weight:700;">0.35(Impacto Usuario)</span> + 0.25(Impacto Negocio) + 0.20(Factibilidad 2 sem) + 0.15(Seguridad CMF) + 0.05(Evidencia)
+      </div>
+
+      <div class="grid g2">
+        <div>
+          <div class="rank-row top" style="padding: 12px 20px; margin-bottom: 8px;">
+            <div class="mono muted">#1</div>
+            <div><b class="highlight" style="font-size:16px;">Estado "Fondos en tránsito"</b><br><span style="font-size:12px;color:var(--green)">Sprint 1 · UI Frontend</span></div>
+            <div class="rank-score" style="font-size:18px;">4,80</div>
+          </div>
+          <div class="rank-row top" style="padding: 12px 20px; margin-bottom: 8px;">
+            <div class="mono muted">#2</div>
+            <div><b class="highlight" style="font-size:16px;">Lenguaje claro y contextual</b><br><span style="font-size:12px;color:var(--green)">Sprint 1 · Copies/Tooltips</span></div>
+            <div class="rank-score" style="font-size:18px;">4,40</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 6px;">
+            <div class="mono muted" style="font-size:12px;">#3</div>
+            <div><span style="font-size:14px; color:rgba(255,255,255,0.9);">Push proactivas por hito</span></div>
+            <div class="rank-score" style="font-size:14px; color:rgba(255,255,255,0.9);">3,95</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 6px;">
+            <div class="mono muted" style="font-size:12px;">#4</div>
+            <div><span style="font-size:14px; color:rgba(255,255,255,0.9);">Rediseño del FAQ de retiros</span></div>
+            <div class="rank-score" style="font-size:14px; color:rgba(255,255,255,0.9);">3,80</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 6px;">
+            <div class="mono muted" style="font-size:12px;">#5</div>
+            <div><span style="font-size:14px; color:rgba(255,255,255,0.9);">Chatbot de consulta de saldo</span></div>
+            <div class="rank-score" style="font-size:14px; color:rgba(255,255,255,0.9);">3,65</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 6px;">
+            <div class="mono muted" style="font-size:12px;">#6</div>
+            <div><span style="font-size:14px; color:rgba(255,255,255,0.9);">Spike de biometría futura</span></div>
+            <div class="rank-score" style="font-size:14px; color:rgba(255,255,255,0.9);">3,50</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 6px; opacity: 0.35;">
+            <div class="mono muted" style="font-size:12px;">#7</div>
+            <div><span style="font-size:14px; text-decoration:line-through;">Opción de cancelación de retiro</span></div>
+            <div class="rank-score" style="font-size:14px;">3,10</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 6px; opacity: 0.35;">
+            <div class="mono muted" style="font-size:12px;">#8</div>
+            <div><span style="font-size:14px; text-decoration:line-through;">Aprobación manual de Riesgo</span></div>
+            <div class="rank-score" style="font-size:14px;">2,85</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 6px; opacity: 0.35;">
+            <div class="mono muted" style="font-size:12px;">#9</div>
+            <div><span style="font-size:14px; text-decoration:line-through;">Gamificación de la espera</span></div>
+            <div class="rank-score" style="font-size:14px;">2,50</div>
+          </div>
+          <div class="rank-row" style="padding: 6px 20px; margin-bottom: 0; background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.2);">
+            <div class="mono muted" style="font-size:12px; color:var(--red);">#10</div>
+            <div><span style="font-size:14px; color:var(--red);">Adelanto de Liquidez Inmediata</span></div>
+            <div class="rank-score" style="font-size:14px; color:var(--red);">2,10</div>
+          </div>
+        </div>
+
+        <div class="card alert" style="border-top: 4px solid var(--red);">
+          <h3 class="red">Descarte de Falso Quick-Win</h3>
+          <p style="margin-top:16px; font-size:16px;">La idea "Adelanto de Liquidez Inmediata" obtuvo apenas <b class="red-gradient" style="font-size:20px;">2.10</b>. Aunque tiene alto Impacto en Usuario, falla catastróficamente en Factibilidad (exige tocar el core) y en Seguridad CMF para un plazo de 2 semanas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: MOCKUP Y GHERKIN -->
+  <section class="slide" data-speaker="ERICK">
+    <div class="wrap">
+      <div class="kicker">La Solución del Sprint 1</div>
+      <h2>De Caja Negra a Transparencia Total</h2>
+      
+      <div class="mockup-container">
+        <div style="flex: 1; text-align: center;">
+          <div style="position:relative; width: 220px; height: 440px; border: 6px solid #475569; border-radius: 32px; padding: 12px; background: #e2e8f0; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+            <div style="position:absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; background: #475569; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;"></div>
+            <div class="badge b-red" style="position:absolute; top: -36px; left: 50%; transform: translateX(-50%); z-index:10; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">ESTADO ACTUAL</div>
+            <div class="phone-ui-hoy" style="padding-top: 80px;">
+              <div style="font-size: 13px; color:#64748b;">Saldo Disponible</div>
+              <div class="saldo-cero" style="font-family: var(--disp); font-size: 48px; font-weight: 700; margin-bottom: 12px; color: #0f172a; letter-spacing:-0.03em;">$0</div>
+              <div class="legal-text" style="font-size: 11px; color: #64748b; background: #f1f5f9; padding: 16px; border-radius: 12px; margin-top: 60px; text-align: left; border-left: 4px solid #cbd5e1;">"Sujeto a la ventana de liquidación de cuotas según el reglamento interno del fondo de inversión..."</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex: 1; text-align: center;">
+          <div style="position:relative; width: 240px; height: 480px; border: 6px solid #94a3b8; border-radius: 36px; padding: 12px; background: #ffffff; margin: 0 auto; box-shadow: 0 30px 60px rgba(0,0,0,0.6);">
+            <div style="position:absolute; top: 0; left: 50%; transform: translateX(-50%); width: 110px; height: 22px; background: #94a3b8; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;"></div>
+            <div class="badge b-green" style="position:absolute; top: -36px; left: 50%; transform: translateX(-50%); z-index:10; box-shadow: 0 8px 16px rgba(16,185,129,0.3);">SPRINT 1</div>
+            <div class="phone-ui-sprint" style="padding-top: 60px;">
+              <div class="sprint-card">
+                <h4>Fondos en Tránsito</h4>
+                <div class="monto">$420.000</div>
+                <div class="tracker">
+                  <div class="tracker-dot active"></div>
+                  <div class="tracker-line"></div>
+                  <div class="tracker-dot"></div>
+                  <div class="tracker-line"></div>
+                  <div class="tracker-dot"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; margin-bottom:24px; font-weight:600; text-transform:uppercase;">
+                  <span style="color:#047857;">Solicitud</span>
+                  <span>Liquidación</span>
+                  <span>Abono</span>
+                </div>
+                <div class="sprint-eta">Abono estimado: Viernes 24</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:24px; border-left: 4px solid var(--green);">
+            <h3>HU-1: Fondos en Tránsito</h3>
+            <div class="list-item" style="font-family:var(--mono); font-size:14px; color:var(--ink);">
+              <span style="color:var(--green)">DADO QUE</span> completé controles de retiro<br>
+              <span style="color:var(--green)">CUANDO</span> visualizo el home en periodo de liquidación<br>
+              <span style="color:var(--green)">ENTONCES</span> veo "Fondos en tránsito", la barra de progreso y fecha estimada.
+            </div>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--green);">
+            <h3>HU-2: Lenguaje Claro</h3>
+            <div class="list-item" style="font-family:var(--mono); font-size:14px; color:var(--ink);">
+              <span style="color:var(--green)">DADO QUE</span> enfrento jerga legal obligatoria<br>
+              <span style="color:var(--green)">CUANDO</span> presiono el tooltip de ayuda<br>
+              <span style="color:var(--green)">ENTONCES</span> leo la traducción: "En máx 2 días hábiles tu dinero estará disponible".
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: METRICAS -->
+  <section class="slide" data-speaker="ERICK">
+    <div class="wrap">
+      <div class="kicker">Tablero del Sprint · Qué mediremos</div>
+      <h2>Cómo sabremos si funciona</h2>
+      
+      <div class="grid g2" style="margin-bottom: 32px;">
+        <div class="card" style="border-top: 3px solid #64748b;">
+          <h3 class="highlight">A 2 semanas</h3>
+          <div style="margin-top:24px;">
+            <div class="list-item">Finalización del flujo de retiro</div>
+            <div class="list-item">Tickets por "saldo $0"</div>
+            <div class="list-item">Reingresos durante la espera</div>
+            <div class="list-item">Comprensión de los mensajes</div>
+          </div>
+        </div>
+        <div class="card tint" style="border-top: 3px solid var(--green);">
+          <h3 class="green">A 30 días</h3>
+          <h4 style="font-family:var(--body); font-weight:700; color:var(--ink); font-size:18px; margin:24px 0 12px 0;">North Star Metric</h4>
+          <p style="font-size:15px; line-height:1.6; color:rgba(255,255,255,0.85); text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Tasa de Continuidad de Inversión a 30 días post-retiro. Es el único número que confirma que recuperamos confianza, no solo que el flujo "funciona".</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 24px; margin-bottom: 24px; text-align:center; background: rgba(255,255,255,0.02); border: 1px solid var(--hair);">
+        <p style="font-size: 16px; color:var(--ink);">
+          <b>Hipótesis:</b> <span class="green" style="font-weight:600;">reducir entre 35% y 40% los tickets relacionados con retiros.</span> 
+          <span style="font-size: 14px; color:var(--muted); font-style:italic; margin-left: 12px;">Lo presentamos como meta por validar, no como resultado garantizado.</span>
+        </p>
+      </div>
+
+      <p style="font-size: 13px; text-align:center; color:var(--muted); max-width:800px; margin:0 auto;">
+        Si mejora sin tocar los guardrails, una segunda etapa evalúa la resiliencia del SMS y, luego, biometría con controles aprobados por Riesgo.
+      </p>
+    </div>
+  </section>
+
+  <!-- SLIDE 11: CIERRE -->
+  <section class="slide" data-speaker="ERICK">
+    <div class="wrap" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+      <div class="kicker">5. Solicitud Formal y Cierre</div>
+      <h2>Petición de Habilitadores al Directorio</h2>
+      
+      <div class="grid g3" style="margin-bottom: 80px;">
+        <div class="card" style="text-align:center; border-top: 3px solid var(--green);">
+          <div style="font-family:var(--mono); font-size:48px; color:var(--green); margin-bottom:16px;">1</div>
+          <h3 style="margin-bottom:12px;">Aprobación Compliance</h3>
+          <p style="font-size:15px;">Editor exclusivo asignado al Sprint para validar copies sin trabar el pase a producción.</p>
+        </div>
+        <div class="card" style="text-align:center; border-top: 3px solid var(--green);">
+          <div style="font-family:var(--mono); font-size:48px; color:var(--green); margin-bottom:16px;">2</div>
+          <h3 style="margin-bottom:12px;">Datos Cohorte</h3>
+          <p style="font-size:15px;">Acceso directo a la línea base de tickets de soporte y métricas de retención de capital.</p>
+        </div>
+        <div class="card" style="text-align:center; border-top: 3px solid var(--green);">
+          <div style="font-family:var(--mono); font-size:48px; color:var(--green); margin-bottom:16px;">3</div>
+          <h3 style="margin-bottom:12px;">Patrocinio CFO</h3>
+          <p style="font-size:15px;">Compromiso para evaluar el éxito de la intervención a los 30 días mediante la North Star Metric.</p>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--hair); padding-top: 48px; text-align: center; max-width: 960px; margin: 0 auto; position:relative;">
+        <div style="position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-family:serif; font-size:80px; color:rgba(255,255,255,0.05); line-height:0;">"</div>
+        <h1 style="font-size: clamp(32px, 3.5vw, 44px); line-height: 1.3;">
+          "La regulación explica por qué el dinero tarda.<br><span class="green-gradient">Es responsabilidad de InverUp evitar que, durante esa espera, el usuario sienta que lo perdió."</span>
+        </h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 12: GRACIAS -->
+  <section class="slide" data-speaker="TRÍADA">
+    <div class="wrap" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+      
+      <h1 class="green-gradient" style="font-size: clamp(64px, 10vw, 120px); margin-bottom: 24px;">Muchas Gracias</h1>
+      <p style="font-size: 24px; color: var(--ink); margin-bottom: 60px; max-width: 600px;">
+        Plan Estratégico de Rescate · InverUp
+      </p>
+
+      <a href="https://docs.google.com/document/d/1g3FUvGOmoHFpW3ecA2_vuObyAQhyjhz3jR6OoQ2n5nc/edit?tab=t.0#heading=h.dtylux3zyady" target="_blank" style="text-decoration: none;">
+        <div class="card tint" style="display:inline-flex; align-items:center; justify-content:center; gap: 16px; padding: 20px 40px; border-radius: 99px; transition: all 0.3s ease; box-shadow: 0 12px 24px rgba(16,185,129,0.2);">
+          <span style="font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.15em;">Ver Documento Completo</span>
+          <span style="color:var(--green); font-size: 24px; margin-top:-2px;">→</span>
+        </div>
+      </a>
+      
+    </div>
+  </section>
+
+</div>
+
+<div class="nav-hint">← / → ESPACIO PARA NAVEGAR</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const bar = document.querySelector('#bar > span');
+  const counter = document.getElementById('ui-counter');
+  const speakerTag = document.getElementById('ui-speaker');
+  const timerEl = document.getElementById('ui-timer');
+  
+  let currentSlide = 0;
+  
+  // Timer logic
+  let timerInterval = null;
+  let timeRemaining = 600; // 10 minutes
+  let timerStarted = false;
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+    const s = (timeRemaining % 60).toString().padStart(2, '0');
+    timerEl.textContent = `${m}:${s}`;
+    
+    if(timeRemaining <= 120) timerEl.classList.add('warning'); // red at 2 mins
+    if(timeRemaining <= 0) clearInterval(timerInterval);
+  }
+
+  function startTimer() {
+    if(timerStarted) return;
+    timerStarted = true;
+    timerEl.classList.add('running');
+    timerInterval = setInterval(() => {
+      timeRemaining--;
+      updateTimerDisplay();
+    }, 1000);
+  }
+
+  function renderSlide(index) {
+    slides.forEach((s, i) => {
+      if (i === index) {
+        s.classList.add('active');
+      } else {
+        s.classList.remove('active');
+      }
+    });
+    bar.style.width = `${(index / (slides.length - 1)) * 100}%`;
+    counter.textContent = `${String(index + 1).padStart(2, '0')} / ${slides.length}`;
+    
+    // Speaker Tag
+    const speaker = slides[index].getAttribute('data-speaker');
+    if(speaker) {
+      speakerTag.textContent = speaker;
+      speakerTag.classList.add('active');
+    } else {
+      speakerTag.classList.remove('active');
+    }
+
+    // Ambient glow positioning based on slide
+    const glow1 = document.querySelector('.ambient-1');
+    const glow2 = document.querySelector('.ambient-2');
+    if(index % 2 !== 0) {
+      glow1.style.transform = 'translate(-30%, 20%) scale(1.2)';
+      glow2.style.transform = 'translate(20%, -30%) scale(0.8)';
+    } else {
+      glow1.style.transform = 'none';
+      glow2.style.transform = 'none';
+    }
+
+    // Start timer upon leaving the Cover Slide (index 0)
+    if(index > 0 && !timerStarted) {
+      startTimer();
+    }
+  }
+
+  function nextSlide() {
+    if (currentSlide < slides.length - 1) {
+      currentSlide++;
+      renderSlide(currentSlide);
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 0) {
+      currentSlide--;
+      renderSlide(currentSlide);
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+    if (e.key === 'Home') { currentSlide = 0; renderSlide(0); }
+    if (e.key === 'End') { currentSlide = slides.length - 1; renderSlide(currentSlide); }
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+  document.addEventListener('touchend', e => {
+    let touchEndX = e.changedTouches[0].screenX;
+    if (touchStartX - touchEndX > 50) nextSlide();
+    if (touchEndX - touchStartX > 50) prevSlide();
+  });
+
+  renderSlide(0);
+</script>
+</body>
+</html>

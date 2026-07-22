@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InverUp · Plan de rescate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#141821; --muted:#6E7580; --hair:#E7E9ED;
+  --green:#00B37E; --green-dk:#05704E; --green-tint:#E7F7F1;
+  --red:#E5484D; --red-dk:#B32A2E; --red-tint:#FCEDED;
+  --inkbg:#121620; --ice:#9AA3B2; --card:#F6F7F9; --ondk:#35D6A4;
+  --disp:'Space Grotesk',sans-serif; --body:'Inter',sans-serif; --mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--body); color:var(--ink); background:#0e1119;
+  overflow:hidden; -webkit-font-smoothing:antialiased;
+}
+/* ---------- progress bar signature ---------- */
+#bar{position:fixed;top:0;left:0;height:4px;width:100%;background:rgba(255,255,255,.10);z-index:60}
+#bar>span{display:block;height:100%;width:0;background:var(--green);transition:width .5s cubic-bezier(.4,0,.2,1)}
+#barlabel{position:fixed;top:9px;left:20px;z-index:60;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ice);text-transform:uppercase}
+/* ---------- deck ---------- */
+#deck{position:relative;height:100%;width:100%}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(28px,5vw,88px);
+  background:var(--bg);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .45s ease,transform .45s ease,visibility .45s;
+  overflow:auto;
+}
+.slide.active{opacity:1;visibility:visible;transform:none;z-index:2}
+.slide.dark{background:var(--inkbg);color:#fff}
+.wrap{width:100%;max-width:1120px;margin:0 auto}
+/* ---------- typography ---------- */
+.kicker{font-family:var(--mono);font-size:clamp(10px,1.1vw,12px);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--green-dk);display:flex;align-items:center;gap:9px;margin-bottom:18px}
+.dark .kicker{color:var(--ondk)}
+.kicker::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--green);flex:none}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,5vw,52px);line-height:1.04;letter-spacing:-.01em}
+h2{font-family:var(--disp);font-weight:700;font-size:clamp(26px,4vw,42px);line-height:1.05;letter-spacing:-.01em;margin-bottom:26px}
+.dark h2,.dark h1{color:#fff}
+p{font-size:clamp(14px,1.5vw,16px);line-height:1.5;color:var(--ink)}
+.lead{font-size:clamp(15px,1.7vw,18px);color:var(--muted);line-height:1.5}
+.muted{color:var(--muted)} .green{color:var(--green-dk)} .reddk{color:var(--red-dk)}
+.mono{font-family:var(--mono)}
+b,strong{font-weight:600}
+/* ---------- components ---------- */
+.foot{position:absolute;left:clamp(28px,5vw,88px);right:clamp(28px,5vw,88px);bottom:26px;
+  display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:var(--mono)}
+.dark .foot{color:var(--ice)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)} .g5{grid-template-columns:repeat(5,1fr)}
+.card{background:var(--card);border-radius:16px;padding:22px 24px}
+.card.line{background:#fff;border:1px solid var(--hair)}
+.tint{background:var(--green-tint)} .rtint{background:var(--red-tint)}
+.stat{font-family:var(--mono);font-weight:700;font-size:clamp(34px,5vw,56px);line-height:1;letter-spacing:-.02em}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);display:inline-block;flex:none}
+.li{display:flex;gap:10px;align-items:flex-start;margin:9px 0;font-size:14px}
+.li .dot{margin-top:6px}
+.pill{display:inline-block;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600}
+.tag-r{background:var(--red-tint);color:var(--red-dk)} .tag-g{background:var(--green-tint);color:var(--green-dk)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-dk);margin-bottom:6px}
+.dark .eyebrow{color:var(--ondk)}
+/* dolores rows */
+.row{display:flex;align-items:center;gap:18px;background:#fff;border:1px solid var(--hair);border-radius:14px;padding:16px 20px;margin-bottom:12px}
+.num{flex:none;width:48px;height:48px;border-radius:11px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:22px}
+.row h3{font-size:16px;margin-bottom:3px} .row p{font-size:13px;color:var(--muted)}
+/* bars */
+.brow{display:grid;grid-template-columns:22px 1fr 46px;gap:12px;align-items:center;margin:7px 0;font-size:13.5px}
+.track{height:12px;border-radius:6px;background:#F0F1F3;overflow:hidden}
+.fill{height:100%;border-radius:6px;background:#C9CED6}
+.fill.top{background:var(--green)} .fill.out{background:var(--red)}
+.bval{font-family:var(--mono);font-weight:700;text-align:right;font-size:13px}
+/* HU */
+.hu{display:grid;grid-template-columns:.85fr 1.15fr;gap:22px}
+.hucard{background:var(--green-tint);border-radius:16px;padding:24px}
+.hucard .lab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-dk);margin-top:14px}
+.hucard .lab:first-child{margin-top:0}
+.hucard .val{font-family:var(--disp);font-weight:600;font-size:clamp(15px,1.8vw,19px);line-height:1.25;margin-top:5px}
+.ac{display:flex;gap:11px;align-items:flex-start;margin:12px 0;font-size:13.5px;line-height:1.45}
+.ac .dot{margin-top:6px}
+.dark .darkcard{background:#1B2130;border-radius:14px;padding:18px 22px}
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:16px;position:relative}
+.mcell{background:var(--card);border-radius:14px;padding:20px 22px}
+.mcell h3{font-size:16px;margin-bottom:4px} .mcell p{font-size:13px;color:var(--muted);margin-bottom:12px}
+.mtac{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600;color:var(--green-dk)}
+.mtac.r{color:var(--red-dk)} .mtac.r .dot{background:var(--red)}
+.axis{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+/* title slide */
+.hero .huge{font-family:var(--disp);font-weight:700;font-size:clamp(64px,13vw,132px);line-height:.92;letter-spacing:-.03em;color:#fff}
+.hero .sub{font-size:clamp(18px,2.6vw,26px);color:var(--ice);margin-top:18px;max-width:760px}
+.motif{margin-top:34px;max-width:520px}
+.motif .track{height:6px;background:rgba(255,255,255,.14)}
+.motif .fill{width:42%;background:var(--green)}
+.motif .cap{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ice);margin-top:9px;text-transform:uppercase}
+.hero .credit{border-top:1px solid rgba(255,255,255,.14);margin-top:44px;padding-top:18px}
+.hero .credit b{color:#fff;font-size:16px} .hero .credit p{color:var(--ice);font-size:12px;margin-top:4px}
+/* close */
+.close q{display:block;font-family:var(--disp);font-weight:700;font-size:clamp(24px,3.6vw,40px);line-height:1.18;quotes:none}
+.close .accent{color:var(--ondk)}
+.close .ln{width:120px;height:5px;background:var(--green);margin-bottom:28px}
+/* nav */
+.navbtn{position:fixed;bottom:22px;z-index:70;width:42px;height:42px;border-radius:50%;border:1px solid var(--hair);
+  background:#fff;color:var(--ink);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.10);transition:transform .15s,background .15s}
+.navbtn:hover{transform:translateY(-2px)} .navbtn:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+#prev{right:74px} #next{right:22px}
+.hint{position:fixed;bottom:30px;left:20px;z-index:60;font-family:var(--mono);font-size:10px;color:var(--ice);letter-spacing:.1em}
+@media (max-width:760px){
+  .g4,.g5,.g3,.g2,.hu,.matrix{grid-template-columns:1fr}
+  .slide{padding:22px 18px 70px;justify-content:flex-start;padding-top:56px}
+  .foot{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .slide{transition:opacity .01s} #bar>span{transition:none}
+}
+</style>
+</head>
+<body>
+<div id="bar"><span></span></div>
+<div id="barlabel">InverUp · rescate</div>
+<div id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide dark active hero">
+  <div class="wrap">
+    <div class="kicker">Plan de rescate de producto · Pitch ejecutivo</div>
+    <div class="huge">InverUp</div>
+    <div class="sub">Recuperar la confianza en el momento del retiro.</div>
+    <div class="motif"><div class="track"><div class="fill"></div></div>
+      <div class="cap">fondos en tránsito → confianza</div></div>
+    <div class="credit">
+      <b>Vale · Tami · Cristian · Erick</b>
+      <p>Metodologías Ágiles y Operación de Equipos de Producto — 10 min</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · CRISIS -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Bloque 1 · Evidencia</div>
+    <h2>La crisis, en 45 días</h2>
+    <div class="grid g4">
+      <div class="card rtint"><div class="stat reddk">−30%</div><p class="reddk" style="margin-top:12px;font-size:13px">de usuarios activos cerró su cuenta y migró a la competencia</p></div>
+      <div class="card rtint"><div class="stat reddk">50%</div><p class="reddk" style="margin-top:12px;font-size:13px">abandona en la validación de identidad del retiro</p></div>
+      <div class="card"><div class="stat">48h</div><p class="muted" style="margin-top:12px;font-size:13px">con saldo $0 en pantalla, sin ninguna explicación</p></div>
+      <div class="card"><div class="stat">H2</div><p class="muted" style="margin-top:12px;font-size:13px">metas de financiamiento del banco en riesgo directo</p></div>
+    </div>
+    <p style="margin-top:26px;max-width:960px">El portafolio <b>Futuro Joven</b> (Sub-30) se desangra en el punto más sensible del producto: cuando el usuario intenta recuperar su dinero. Fuga hacia <b>Fintual</b> y <b>RapiAccounts</b>.</p>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>02 / 16</span></div>
+</section>
+
+<!-- 3 · DOLORES -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Auditoría del flujo de retiro</div>
+    <h2>Tres dolores en el retiro</h2>
+    <div class="row"><div class="num">1</div><div style="flex:1"><h3>Burocracia del trámite</h3><p>Triple validación: clave + SMS que muchas veces no llega + foto de cédula por ambos lados.</p></div><span class="pill tag-r">50% abandona aquí</span></div>
+    <div class="row"><div class="num">2</div><div style="flex:1"><h3>Saldo $0 sin datos en tiempo real</h3><p>La liquidación tarda 48h hábiles, pero la app no avisa nada. El saldo aparece en cero, mudo.</p></div><span class="pill tag-r">Pánico → call center → CMF</span></div>
+    <div class="row"><div class="num">3</div><div style="flex:1"><h3>Lenguaje legal</h3><p>“Sujeto a la ventana de liquidación de cuotas según el reglamento interno del fondo.” El Sub-30 no lo entiende.</p></div><span class="pill" style="background:var(--card);color:var(--muted)">Confusión y desconfianza</span></div>
+    <p style="margin-top:18px;font-style:italic">Para el sistema, la operación funciona. Para el usuario, su dinero desapareció.</p>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>03 / 16</span></div>
+</section>
+
+<!-- 4 · ARQUETIPOS -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Discovery profundo con IA</div>
+    <h2>Seis arquetipos simulados</h2>
+    <div class="grid g3">
+      <div class="card"><div style="display:flex;gap:9px;align-items:center"><span class="dot"></span><b>Camila · 24</b></div><p class="muted" style="font-size:13px;margin:8px 0">“La que amenaza”. Ve saldo $0, entra en pánico y amenaza con la CMF.</p><b class="green" style="font-size:12px">Confianza: media</b></div>
+      <div class="card"><div style="display:flex;gap:9px;align-items:center"><span class="dot"></span><b>Matías · 29</b></div><p class="muted" style="font-size:13px;margin:8px 0">“Se fue sin drama”. Sofisticado; migra montos altos en silencio.</p><b class="green" style="font-size:12px">Confianza: media-baja</b></div>
+      <div class="card"><div style="display:flex;gap:9px;align-items:center"><span class="dot"></span><b>Javiera · 26</b></div><p class="muted" style="font-size:13px;margin:8px 0">“Abandonó en la validación”. El SMS no llegó; quedó desconfiada.</p><b class="green" style="font-size:12px">Confianza: media</b></div>
+      <div class="card"><div style="display:flex;gap:9px;align-items:center"><span class="dot"></span><b>Ignacio · 22</b></div><p class="muted" style="font-size:13px;margin:8px 0">“Desconfía por rumor”. No ha retirado, pero ya duda por lo que oyó.</p><b class="green" style="font-size:12px">Confianza: baja</b></div>
+      <div class="card"><div style="display:flex;gap:9px;align-items:center"><span class="dot"></span><b>Fernanda · 27</b></div><p class="muted" style="font-size:13px;margin:8px 0">“Casi no lo notó”. Tolera la fricción; lealtad tibia, riesgo futuro.</p><b class="green" style="font-size:12px">Confianza: media</b></div>
+      <div class="card"><div style="display:flex;gap:9px;align-items:center"><span class="dot"></span><b>Benjamín · 28</b></div><p class="muted" style="font-size:13px;margin:8px 0">“Se fue por otra cosa”. Migró por competencia, no por el retiro.</p><b class="green" style="font-size:12px">Confianza: media-alta</b></div>
+    </div>
+    <p style="margin-top:20px;font-style:italic;font-size:14px">Cada arquetipo declara su nivel de confianza y su evidencia faltante. No copiamos la salida de la IA: la editamos y marcamos qué debe validar un humano.</p>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>04 / 16</span></div>
+</section>
+
+<!-- 5 · EMPATÍA -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Discovery · el momento del retiro</div>
+    <h2>Mapa de empatía</h2>
+    <div class="grid g2">
+      <div class="card line"><div class="eyebrow">Dice</div><p>“Me sale CERO. ¿Dónde está mi plata? Yo no cerré nada. Necesito eso para el arriendo.”</p></div>
+      <div class="card line"><div class="eyebrow">Piensa</div><p>La app falló, me la robaron, o me tratan como sospechoso por sacar mi propio dinero.</p></div>
+      <div class="card line"><div class="eyebrow">Hace</div><p>Reintenta el retiro, reingresa a la app, escribe a soporte en mayúsculas, pregunta a amigos, googlea, amenaza con denunciar.</p></div>
+      <div class="card line"><div class="eyebrow">Siente</div><p>Ansiedad, pérdida de control, desprotección. La espera no es el problema: el silencio sí.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>05 / 16</span></div>
+</section>
+
+<!-- 6 · NSM -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Bloque 2 · Métrica que salva al producto</div>
+    <h2>North Star Metric</h2>
+    <div class="card tint" style="margin-bottom:22px">
+      <div style="font-family:var(--disp);font-weight:600;font-size:clamp(20px,2.6vw,27px);color:var(--green-dk)">Tasa de Continuidad de Inversión a 30 días post-retiro</div>
+      <p style="margin-top:10px">% de usuarios que, 30 días después de retirar, mantienen saldo invertido, hacen un nuevo aporte o conservan su plan activo — sin retirar luego todo su capital.</p>
+    </div>
+    <div class="grid g2" style="margin-bottom:20px">
+      <div><b>Por qué esta y no otra</b><p class="muted" style="margin-top:8px;font-size:14px"><b class="green">Una cuenta abierta ≠ retención.</b> Muchos completan el retiro y luego dejan de aportar. No es métrica de vanidad: mide confianza sostenida, no un flujo que “funciona”.</p></div>
+      <div><b>Métricas de apoyo</b>
+        <div class="li"><span class="dot"></span>Finalización del retiro</div>
+        <div class="li"><span class="dot"></span>Abandono por etapa</div>
+        <div class="li"><span class="dot"></span>Tickets “saldo $0”</div>
+        <div class="li"><span class="dot"></span>Reingresos durante la espera</div>
+      </div>
+    </div>
+    <div class="card dark darkcard" style="background:var(--inkbg)">
+      <div class="eyebrow" style="color:var(--ondk)">Guardrails innegociables</div>
+      <p style="color:#fff;font-weight:600;font-size:15px;margin-top:4px">0 incidentes de fraude adicionales &nbsp;·&nbsp; 100% cumplimiento del plazo regulatorio de 48h hábiles (T+2)</p>
+    </div>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>06 / 16</span></div>
+</section>
+
+<!-- 7 · POLÍTICO -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Bloque 3 · Gobernanza y política</div>
+    <h2>Mapa político — Poder / Interés</h2>
+    <div class="matrix">
+      <div class="mcell"><h3>Riesgo &amp; Compliance</h3><p>Veta si se quitan pasos de seguridad.</p><div class="mtac r"><span class="dot"></span>Buscar su NO oposición</div></div>
+      <div class="mcell"><h3>CFO / Finanzas</h3><p>Frenar la fuga ya, con costo acotado.</p><div class="mtac"><span class="dot"></span>Gestionar de cerca</div></div>
+      <div class="mcell"><h3>Desarrollo</h3><p>Alcance viable, sin tocar el core.</p><div class="mtac"><span class="dot"></span>Aliado técnico</div></div>
+      <div class="mcell"><h3>CX / Soporte</h3><p>Reducir reclamos y daño reputacional.</p><div class="mtac"><span class="dot"></span>Mantener informado</div></div>
+    </div>
+    <div class="card tint" style="margin-top:18px"><p><b class="green">Táctica del Sprint 1:</b> no eliminamos clave, SMS ni cédula, ni tocamos el motor de liquidación. Solo transparencia y contenido → convertimos el veto de Riesgo en <b>no oposición</b>.</p></div>
+  </div>
+  <div class="foot"><span>↑ poder &nbsp;·&nbsp; interés →</span><span>07 / 16</span></div>
+</section>
+
+<!-- 8 · DoR/DoD -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Gobernanza de IA · automatizada en el proceso</div>
+    <h2>Definition of Ready / Done</h2>
+    <div class="grid g2">
+      <div class="card"><b style="font-size:17px">DoR — antes de empezar</b>
+        <div class="li"><span class="dot"></span>Fuente normativa identificada</div>
+        <div class="li"><span class="dot"></span>Dependencias de datos declaradas</div>
+        <div class="li"><span class="dot"></span>Responsable humano de Compliance asignado a la historia</div>
+      </div>
+      <div class="card"><b style="font-size:17px">DoD — antes de producción</b>
+        <div class="li"><span class="dot"></span>Validación humana de todo texto asistido por IA</div>
+        <div class="li"><span class="dot"></span>Trazabilidad de la versión aprobada</div>
+        <div class="li"><span class="dot"></span>Prueba dirigida anti-alucinación: no inventa plazos, garantías ni condiciones</div>
+        <div class="li"><span class="dot"></span>Sin datos personales (PII) a servicios externos de IA</div>
+      </div>
+    </div>
+    <div class="card dark darkcard" style="background:var(--inkbg);margin-top:18px">
+      <div class="eyebrow" style="color:var(--ondk)">Dos guardrails permanentes</div>
+      <p style="color:#fff;font-weight:600;font-size:16px;margin-top:4px">Seguridad sin incidentes adicionales. &nbsp;&nbsp; Cumplimiento total del ciclo T+2.</p>
+      <p style="color:var(--ice);font-size:12px;margin-top:6px">La gobernanza no frena el Sprint: es lo que permite avanzar con IA de forma segura y trazable.</p>
+    </div>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>08 / 16</span></div>
+</section>
+
+<!-- 9 · MODELO -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Bloque 4 · Priorización basada en datos</div>
+    <h2>El modelo, no la opinión</h2>
+    <div class="grid g5">
+      <div class="card tint" style="text-align:center"><div class="stat green" style="font-size:clamp(28px,4vw,40px)">35%</div><p class="muted" style="font-size:12px;margin-top:8px">Impacto en el usuario</p></div>
+      <div class="card tint" style="text-align:center"><div class="stat green" style="font-size:clamp(28px,4vw,40px)">25%</div><p class="muted" style="font-size:12px;margin-top:8px">Impacto en el negocio</p></div>
+      <div class="card" style="text-align:center"><div class="stat" style="font-size:clamp(28px,4vw,40px)">20%</div><p class="muted" style="font-size:12px;margin-top:8px">Factibilidad en 2 semanas</p></div>
+      <div class="card" style="text-align:center"><div class="stat" style="font-size:clamp(28px,4vw,40px)">15%</div><p class="muted" style="font-size:12px;margin-top:8px">Seguridad &amp; Compliance</p></div>
+      <div class="card" style="text-align:center"><div class="stat" style="font-size:clamp(28px,4vw,40px)">5%</div><p class="muted" style="font-size:12px;margin-top:8px">Confianza de la evidencia</p></div>
+    </div>
+    <p style="margin-top:22px;max-width:980px">Puntaje ponderado 1–5 sobre 10 iniciativas. Sirve para distinguir una idea atractiva de una decisión adecuada a una crisis de dos semanas.</p>
+    <div class="card rtint" style="margin-top:16px"><p><b class="reddk">Ejemplo de descarte:</b> “liquidez inmediata” tiene alto impacto en el usuario, pero exige capital, cambios profundos, gestión de riesgo y aprobación regulatoria. No cabe en un sprint de rescate.</p></div>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>09 / 16</span></div>
+</section>
+
+<!-- 10 · RANKING -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Ranking ponderado · top 2 al Sprint</div>
+    <h2>Diez iniciativas evaluadas</h2>
+    <div id="ranking"></div>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>10 / 16</span></div>
+</section>
+
+<!-- 11 · SPRINT GOAL -->
+<section class="slide dark">
+  <div class="wrap">
+    <div class="kicker">Primer Sprint de rescate · 2 semanas</div>
+    <h1 style="font-size:clamp(28px,4vw,40px);margin-bottom:20px">Sprint Goal</h1>
+    <div class="darkcard" style="background:#1B2130"><p style="color:#fff;font-weight:600;font-size:clamp(17px,2.2vw,22px);line-height:1.35">Restaurar la confianza durante el retiro: eliminar el pánico del saldo $0 y la confusión del lenguaje legal — sin intervenir el core legacy ni aumentar el riesgo.</p></div>
+    <div class="eyebrow" style="color:var(--ondk);margin-top:24px">Épica macro</div>
+    <p style="color:var(--ice);max-width:940px">Transparentar la experiencia de retiro para el usuario Sub-30 sin tocar el core ni debilitar los controles de identidad.</p>
+    <div class="grid g3" style="margin-top:20px">
+      <div class="darkcard" style="background:#1B2130"><div style="display:flex;gap:9px;align-items:center"><span class="dot" style="background:var(--ondk)"></span><span style="color:#fff;font-size:13.5px">Solo frontend, contenido y estados visibles</span></div></div>
+      <div class="darkcard" style="background:#1B2130"><div style="display:flex;gap:9px;align-items:center"><span class="dot" style="background:var(--ondk)"></span><span style="color:#fff;font-size:13.5px">No toca el motor de liquidación</span></div></div>
+      <div class="darkcard" style="background:#1B2130"><div style="display:flex;gap:9px;align-items:center"><span class="dot" style="background:var(--ondk)"></span><span style="color:#fff;font-size:13.5px">No elimina controles de seguridad</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · HU1 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Historia de usuario de alto impacto</div>
+    <h2>HU-1 · Fondos en tránsito</h2>
+    <div class="hu">
+      <div class="hucard">
+        <div class="lab">Como</div><div class="val">usuario que confirmó un retiro</div>
+        <div class="lab">Quiero</div><div class="val">ver dónde está mi dinero y cuándo llega</div>
+        <div class="lab">Para</div><div class="val">no sentir que desapareció</div>
+      </div>
+      <div>
+        <b style="font-size:16px">Criterios de aceptación</b>
+        <div class="ac"><span class="dot"></span><span>Dado que confirmé un retiro, cuando entro a la app, entonces veo el estado <b>“Fondos en tránsito”</b> en lugar de saldo $0.</span></div>
+        <div class="ac"><span class="dot"></span><span>Dado un retiro en curso, cuando abro el detalle, entonces veo la <b>etapa actual</b> y una <b>barra de progreso</b>.</span></div>
+        <div class="ac"><span class="dot"></span><span>Dado un retiro en curso, entonces veo la <b>fecha estimada de abono</b> (máx. 2 días hábiles), nunca menor al plazo regulatorio.</span></div>
+        <div class="ac"><span class="dot"></span><span>El estado persiste hasta el abono efectivo; el monto sigue visible como “en tránsito”, no en cero.</span></div>
+        <div class="card" style="margin-top:10px;padding:12px 16px"><p style="font-size:12.5px"><b class="green">Guardrail:</b> no modifica la liquidación; la fecha proviene de la regla T+2, no se inventa. Copy de plazos con validación humana (DoD).</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>12 / 16</span></div>
+</section>
+
+<!-- 13 · HU2 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Historia de usuario de alto impacto</div>
+    <h2>HU-2 · Lenguaje claro contextual</h2>
+    <div class="hu">
+      <div class="hucard">
+        <div class="lab">Como</div><div class="val">usuario Sub-30 que inicia un retiro</div>
+        <div class="lab">Quiero</div><div class="val">entender los términos en lenguaje simple</div>
+        <div class="lab">Para</div><div class="val">confiar en el proceso y no abandonar</div>
+      </div>
+      <div>
+        <b style="font-size:16px">Criterios de aceptación</b>
+        <div class="ac"><span class="dot"></span><span>Dado un término legal (p.ej. “ventana de liquidación”), cuando aparece en el flujo, entonces se acompaña de una <b>explicación simple y verificada</b>.</span></div>
+        <div class="ac"><span class="dot"></span><span>Ejemplo aprobado: <i>“Tu dinero está en proceso de liquidación y estará disponible en un máximo de 2 días hábiles.”</i></span></div>
+        <div class="ac"><span class="dot"></span><span>Todo copy asistido por IA pasa por <b>validación humana</b> y trazabilidad de versión antes de publicarse.</span></div>
+        <div class="ac"><span class="dot"></span><span>Prueba dirigida confirma que el sistema <b>no inventa</b> plazos, garantías ni condiciones.</span></div>
+        <div class="card" style="margin-top:10px;padding:12px 16px"><p style="font-size:12.5px"><b class="green">Guardrail:</b> no altera la seguridad ni la liquidación; solo traduce y contextualiza contenido en el frontend.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>13 / 16</span></div>
+</section>
+
+<!-- 14 · MEDICIÓN -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Tablero del Sprint · qué mediremos</div>
+    <h2>Cómo sabremos si funciona</h2>
+    <div class="grid g2">
+      <div class="card"><b style="font-size:16px">A 2 semanas</b>
+        <div class="li"><span class="dot"></span>Finalización del flujo de retiro</div>
+        <div class="li"><span class="dot"></span>Tickets por “saldo $0”</div>
+        <div class="li"><span class="dot"></span>Reingresos durante la espera</div>
+        <div class="li"><span class="dot"></span>Comprensión de los mensajes</div>
+      </div>
+      <div class="card tint"><b class="green" style="font-size:16px">A 30 días</b>
+        <div style="font-family:var(--disp);font-weight:600;font-size:19px;margin:8px 0 4px">North Star Metric</div>
+        <p class="muted" style="font-size:13.5px">Tasa de Continuidad de Inversión a 30 días post-retiro. Es el único número que confirma que recuperamos confianza, no solo que el flujo “funciona”.</p>
+      </div>
+    </div>
+    <div class="card line" style="margin-top:16px"><p style="font-size:15px"><b>Hipótesis:</b> <b class="green">reducir entre 35% y 40% los tickets relacionados con retiros.</b> <i class="muted">Lo presentamos como meta por validar, no como resultado garantizado.</i></p></div>
+    <p class="muted" style="margin-top:12px;font-size:13px">Si mejora sin tocar los guardrails, una segunda etapa evalúa la resiliencia del SMS y, luego, biometría con controles aprobados por Riesgo.</p>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>14 / 16</span></div>
+</section>
+
+<!-- 15 · SOLICITUD -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Bloque 5 · Cierre y solicitud formal</div>
+    <h2>Lo que pedimos al Directorio</h2>
+    <div class="card tint" style="margin-bottom:20px"><div class="eyebrow">Aprobar</div><p style="font-weight:600;font-size:clamp(15px,1.9vw,18px)">Un Sprint de rescate de 2 semanas: <b>“Fondos en tránsito” + Lenguaje claro contextual.</b></p></div>
+    <b style="font-size:15px">Tres habilitadores</b>
+    <div class="grid g3" style="margin-top:12px">
+      <div class="card"><div class="num" style="width:40px;height:40px;font-size:19px;border-radius:9px">1</div><h3 style="font-size:15px;margin-top:12px">Responsable de Compliance</h3><p class="muted" style="font-size:12.5px;margin-top:4px">asignado al Sprint para validar contenidos.</p></div>
+      <div class="card"><div class="num" style="width:40px;height:40px;font-size:19px;border-radius:9px">2</div><h3 style="font-size:15px;margin-top:12px">Línea base de datos</h3><p class="muted" style="font-size:12.5px;margin-top:4px">acceso a retiros, tickets y continuidad de inversión.</p></div>
+      <div class="card"><div class="num" style="width:40px;height:40px;font-size:19px;border-radius:9px">3</div><h3 style="font-size:15px;margin-top:12px">Patrocinio ejecutivo</h3><p class="muted" style="font-size:12.5px;margin-top:4px">para la evaluación de resultados a 30 días.</p></div>
+    </div>
+    <p style="margin-top:20px;font-style:italic">No pedimos transformar el core. Pedimos autorización para recuperar visibilidad, control y confianza en el momento que más importa.</p>
+  </div>
+  <div class="foot"><span>InverUp · Plan de rescate</span><span>15 / 16</span></div>
+</section>
+
+<!-- 16 · CIERRE -->
+<section class="slide dark close">
+  <div class="wrap">
+    <div class="ln"></div>
+    <q>La regulación explica por qué el dinero tarda.<br><span class="accent">Es responsabilidad de InverUp evitar que, durante esa espera, el usuario sienta que lo perdió.</span></q>
+    <div style="border-top:1px solid rgba(255,255,255,.14);margin-top:34px;padding-top:20px">
+      <b style="color:#fff;font-size:19px">Gracias.</b>
+      <p style="color:var(--ice);font-size:12px;margin-top:6px">Vale · Tami · Cristian · Erick — InverUp, Plan de rescate</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<button id="prev" class="navbtn" aria-label="Anterior">‹</button>
+<button id="next" class="navbtn" aria-label="Siguiente">›</button>
+<div class="hint">← → para navegar</div>
+
+<script>
+// ranking data
+const R=[
+ {t:"Estado “Fondos en tránsito” (barra + fecha)",v:4.8,k:"top"},
+ {t:"Lenguaje claro y contextual en el retiro",v:4.4,k:"top"},
+ {t:"Notificaciones de estado durante la liquidación",v:4.0},
+ {t:"Timeline visual de las etapas del retiro",v:3.9},
+ {t:"Centro de ayuda contextual “¿dónde está mi plata?”",v:3.6},
+ {t:"Reenvío de SMS con feedback claro",v:3.5},
+ {t:"Estimador de fecha de abono personalizado",v:3.3},
+ {t:"Validación biométrica con controles compensatorios",v:2.9},
+ {t:"Retiro parcial exprés",v:2.4},
+ {t:"Liquidez inmediata / adelanto de fondos",v:2.1,k:"out"},
+];
+document.getElementById('ranking').innerHTML=R.map((d,i)=>{
+ const cls=d.k==='top'?'top':d.k==='out'?'out':'';
+ const tc=d.k==='top'?'color:var(--green-dk);font-weight:600':d.k==='out'?'color:var(--red-dk);font-weight:600':'';
+ return `<div class="brow"><span class="mono muted">${i+1}</span>
+   <div style="display:flex;align-items:center;gap:12px"><span style="flex:0 0 46%;${tc}">${d.t}</span>
+   <div class="track" style="flex:1"><div class="fill ${cls}" style="width:${d.v/5*100}%"></div></div></div>
+   <span class="bval" style="${tc}">${d.v.toFixed(1)}</span></div>`;
+}).join('');
+
+// navigation
+const slides=[...document.querySelectorAll('.slide')];
+const barFill=document.querySelector('#bar>span');
+const label=document.getElementById('barlabel');
+let i=0;
+function show(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  barFill.style.width=((i)/(slides.length-1)*100)+'%';
+  label.textContent=`InverUp · ${String(i+1).padStart(2,'0')} / ${slides.length}`;
+  slides[i].scrollTop=0;
+}
+function next(){show(i+1)} function prev(){show(i-1)}
+document.getElementById('next').onclick=next;
+document.getElementById('prev').onclick=prev;
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next()}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev()}
+  else if(e.key==='Home')show(0); else if(e.key==='End')show(slides.length-1);
+});
+// touch
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>55){dx<0?next():prev()}x0=null},{passive:true});
+show(0);
+</script>
+</body>
+</html>

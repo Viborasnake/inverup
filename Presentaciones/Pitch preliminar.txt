@@ -1,0 +1,137 @@
+## Pitch ejecutivo — Plan de rescate de InverUp
+
+Duración estimada: 10 minutos. El guion está escrito para ser hablado, no leído como informe.
+
+### Bloque 1 — Crisis y evidencia
+
+**Vale | 2 minutos**
+
+> Hoy InverUp no enfrenta solamente un problema de usabilidad. Enfrenta una crisis de confianza que ya está afectando directamente al negocio.
+>
+> En apenas 45 días, el portafolio Futuro Joven perdió un 30% de sus usuarios activos. Esta fuga amenaza las metas de financiamiento del banco para el segundo semestre y se concentra en uno de los momentos más sensibles de cualquier producto financiero: cuando el usuario intenta recuperar su dinero.
+>
+> Encontramos dos puntos críticos.
+>
+> El primero es la triple validación: clave, código SMS y fotografías de la cédula por ambos lados. En esta etapa abandona el 50% de los usuarios que inicia un retiro.
+>
+> El segundo ocurre después de confirmar. Durante las 48 horas hábiles que exige la liquidación, la aplicación muestra un saldo de cero sin explicar dónde está el dinero ni cuándo llegará. Para el sistema, la operación está funcionando; para el usuario, su dinero desapareció.
+>
+> Esto genera reingresos constantes, contactos al call center, amenazas de denuncia ante la CMF y, finalmente, abandono silencioso: personas que reducen su saldo, detienen sus aportes o migran a otra plataforma.
+>
+> Por eso definimos el desafío de la siguiente manera: ¿cómo transparentamos la experiencia de retiro para los usuarios Sub-30, reduciendo incertidumbre y fricción, sin modificar el core legacy, manteniendo el plazo regulatorio y sin debilitar los controles de seguridad?
+>
+> Para responderlo, primero necesitábamos entender qué significa realmente esta experiencia para el usuario.
+
+**Transición a Tami:**
+
+> Cristian nos mostrará cómo ese problema se traduce en comportamiento y cómo mediremos si recuperamos la confianza.
+
+---
+
+### Bloque 2 — Usuario y North Star Metric
+
+**Tami | 2 minutos**
+
+> El usuario Sub-30 no necesariamente espera que la regulación desaparezca. Lo que necesita es entender qué está ocurriendo y sentir que mantiene el control.
+>
+> Durante el retiro observamos tres reacciones principales. Primero, interpreta la triple validación como burocracia o desconfianza hacia él. Segundo, cuando ve su saldo en cero, piensa que la aplicación falló o que perdió su dinero. Y tercero, al no encontrar una explicación clara, busca respuestas fuera de InverUp: revisa su correo, reingresa a la aplicación, consulta a sus amigos, busca en Google o contacta al soporte.
+>
+> El problema no termina cuando el dinero llega. Aunque algunos usuarios completan el retiro y mantienen la cuenta abierta, después dejan de aportar o reducen el capital invertido. Por eso, una cuenta abierta no representa necesariamente retención.
+>
+> Nuestra North Star Metric será la **Tasa de Continuidad de Inversión a 30 días post-retiro**.
+>
+> Esta métrica representa el porcentaje de usuarios que, 30 días después de retirar, mantiene saldo invertido, realiza un nuevo aporte o conserva activo su plan de ahorro, sin retirar posteriormente todo su capital.
+>
+> Mediremos además la finalización del retiro, el abandono por etapa, los tickets relacionados con saldo cero y los reingresos durante la espera.
+>
+> Como resguardo, ningún avance podrá aumentar los incidentes de fraude ni afectar el cumplimiento del plazo regulatorio de 48 horas hábiles.
+>
+> Así, no mediremos solamente si el flujo funciona. Mediremos si la experiencia permite que el usuario siga confiando e invirtiendo en InverUp.
+
+**Transición a Cristian:**
+
+> Pero recuperar la confianza exige avanzar sin crear nuevos riesgos. Tami explicará cómo alinearemos a las áreas críticas y cómo gobernaremos la solución.
+
+---
+
+### Bloque 3 — Stakeholders, riesgos y gobernanza
+
+**Cristian | 2 minutos**
+
+> La mayor dificultad no es solamente diseñar una buena experiencia. Es lograr que Finanzas, Riesgo, Tecnología y CX puedan avanzar hacia un mismo objetivo.
+>
+> El CFO necesita frenar rápidamente la fuga de capital con una inversión acotada. CX necesita reducir los reclamos y el daño reputacional. Desarrollo necesita un alcance viable que no comprometa el core legacy. Y Riesgo necesita asegurar que ninguna mejora debilite los controles de identidad ni exponga al banco ante la CMF.
+>
+> Nuestra estrategia para el primer Sprint es buscar la **no oposición de Riesgo**, porque no eliminaremos la clave, el SMS ni la validación mediante cédula. Tampoco modificaremos el motor de liquidación. Trabajaremos exclusivamente sobre la transparencia, el contenido y los estados visibles para el usuario.
+>
+> Para evitar riesgos derivados del uso de IA, definimos una gobernanza concreta.
+>
+> En la Definition of Ready, ninguna historia puede comenzar sin identificar su fuente normativa, sus dependencias de datos y el responsable humano de Compliance que revisará los contenidos.
+>
+> En la Definition of Done, ningún texto asistido por IA puede pasar a producción sin validación humana, trazabilidad de la versión aprobada y una prueba dirigida que compruebe que el sistema no inventa plazos, garantías ni condiciones.
+>
+> Además, verificaremos que no se envíen datos personales a servicios externos de IA y que se mantengan nuestros dos guardrails: seguridad sin incidentes adicionales y cumplimiento total del ciclo T+2.
+>
+> De esta manera, la gobernanza no funciona como un freno al Sprint, sino como el mecanismo que permite avanzar con seguridad y evidencia.
+
+**Transición a Erick:**
+
+> Con estas restricciones claras, priorizamos las iniciativas que ofrecen mayor impacto dentro de las dos semanas disponibles.
+
+---
+
+### Bloque 4 — Priorización y primer Sprint
+
+**Erick | 3 minutos**
+
+> Para evitar que la decisión dependiera de opiniones o de la presión de un área, evaluamos diez iniciativas mediante una fórmula ponderada.
+>
+> Asignamos un 35% al impacto en el usuario, un 25% al impacto en el negocio, un 20% a la factibilidad en dos semanas, un 15% a Seguridad y Compliance y un 5% a la confianza de la evidencia.
+>
+> Este modelo nos permitió distinguir entre una idea atractiva y una decisión adecuada para la crisis actual.
+>
+> Por ejemplo, ofrecer liquidez inmediata tendría un alto impacto para el usuario, pero requiere capital, modificaciones profundas, gestión de riesgo y aprobación regulatoria. No es una solución viable para un Sprint de rescate de dos semanas.
+>
+> Las dos iniciativas con mejor puntuación fueron:
+>
+> Primero, reemplazar el saldo cero por un estado de **“Fondos en tránsito”**, con barra de progreso y fecha estimada de abono. Esta iniciativa obtuvo 4,8 de 5.
+>
+> Segundo, transformar los términos y mensajes del retiro a un lenguaje claro y contextual, con 4,4 de 5.
+>
+> Ambas atacan los principales detonantes de la crisis, pueden implementarse en frontend, no modifican la liquidación ni eliminan controles de seguridad.
+>
+> Por eso, nuestro Sprint Goal será: **restaurar la confianza durante el retiro, eliminando el pánico del saldo cero y la confusión provocada por el lenguaje legal, sin intervenir el core legacy ni aumentar el riesgo.**
+>
+> El Sprint tendrá dos historias principales.
+>
+> En la primera, después de confirmar el retiro, el usuario verá permanentemente que sus fondos están en tránsito, la etapa en que se encuentran y la fecha estimada de llegada.
+>
+> En la segunda, los términos técnicos serán acompañados por explicaciones simples y verificadas. Por ejemplo: “Tu dinero está en proceso de liquidación y estará disponible en un máximo de dos días hábiles”.
+>
+> Al terminar las dos semanas mediremos finalización del flujo, tickets por saldo cero, reingresos durante la espera y comprensión de los mensajes. A 30 días evaluaremos el efecto sobre nuestra North Star Metric.
+>
+> Nuestra hipótesis es que esta intervención puede reducir entre 35% y 40% los tickets relacionados con retiros. Lo presentaremos como una meta por validar, no como un resultado garantizado.
+>
+> Si los indicadores mejoran sin afectar los guardrails, avanzaremos a una segunda etapa para evaluar resiliencia del SMS y, posteriormente, alternativas biométricas con controles compensatorios aprobados por Riesgo.
+
+---
+
+### Bloque 5 — Cierre y solicitud formal
+
+**Erick | 1 minuto**
+
+> InverUp no necesita prometer que el dinero llegará antes de lo permitido. Necesita dejar de hacer sentir al usuario que su dinero desapareció.
+>
+> Nuestra propuesta interviene el punto de mayor ansiedad con un alcance acotado, medible y compatible con las restricciones técnicas y regulatorias del banco.
+>
+> Por eso solicitamos formalmente la aprobación de un Sprint de rescate de dos semanas para implementar las dos iniciativas priorizadas: “Fondos en tránsito” y lenguaje claro contextual.
+>
+> Solicitamos también tres habilitadores: un responsable de Compliance asignado al Sprint, acceso a la línea base de retiros, tickets y continuidad de inversión, y patrocinio ejecutivo para realizar la evaluación de resultados a los 30 días.
+>
+> No estamos pidiendo una transformación completa del core. Estamos pidiendo autorización para recuperar visibilidad, control y confianza en el momento que más importa.
+>
+> Si logramos que el usuario entienda dónde está su dinero, cuándo llegará y que sigue protegido, InverUp dejará de ser una caja negra y podrá volver a ser una plataforma en la que los jóvenes quieran seguir invirtiendo.
+
+### Frase final recomendada
+
+> **La regulación explica por qué el dinero tarda; pero es responsabilidad de InverUp evitar que, durante esa espera, el usuario sienta que lo perdió.**
