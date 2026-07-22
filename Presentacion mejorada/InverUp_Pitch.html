@@ -560,9 +560,10 @@ p { font-size: clamp(16px, 1.6vw, 18px); line-height: 1.6; color: var(--muted); 
       <div class="kicker">La Solución del Sprint 1</div>
       <h2>De Caja Negra a Transparencia Total</h2>
       
-      <div class="mockup-container">
-        <div style="flex: 1; text-align: center;">
-          <div style="position:relative; width: 220px; height: 440px; border: 6px solid #475569; border-radius: 32px; padding: 12px; background: #e2e8f0; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+      <div style="display: grid; grid-template-columns: 460px 1fr; gap: 40px; margin-top: 20px; align-items: center;">
+        
+        <div style="display: flex; justify-content: center; align-items: center; position: relative;">
+          <div style="position:relative; width: 220px; height: 440px; border: 6px solid #475569; border-radius: 32px; padding: 12px; background: #e2e8f0; box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 1;">
             <div style="position:absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; background: #475569; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;"></div>
             <div class="badge b-red" style="position:absolute; top: -36px; left: 50%; transform: translateX(-50%); z-index:10; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">ESTADO ACTUAL</div>
             <div class="phone-ui-hoy" style="padding-top: 80px;">
@@ -571,10 +572,7 @@ p { font-size: clamp(16px, 1.6vw, 18px); line-height: 1.6; color: var(--muted); 
               <div class="legal-text" style="font-size: 11px; color: #64748b; background: #f1f5f9; padding: 16px; border-radius: 12px; margin-top: 60px; text-align: left; border-left: 4px solid #cbd5e1;">"Sujeto a la ventana de liquidación de cuotas según el reglamento interno del fondo de inversión..."</div>
             </div>
           </div>
-        </div>
-
-        <div style="flex: 1; text-align: center;">
-          <div style="position:relative; width: 240px; height: 480px; border: 6px solid #94a3b8; border-radius: 36px; padding: 12px; background: #ffffff; margin: 0 auto; box-shadow: 0 30px 60px rgba(0,0,0,0.6);">
+          <div style="position:relative; width: 240px; height: 480px; border: 6px solid #94a3b8; border-radius: 36px; padding: 12px; background: #ffffff; box-shadow: 0 30px 60px rgba(0,0,0,0.6); z-index: 2; margin-left: -30px;">
             <div style="position:absolute; top: 0; left: 50%; transform: translateX(-50%); width: 110px; height: 22px; background: #94a3b8; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;"></div>
             <div class="badge b-green" style="position:absolute; top: -36px; left: 50%; transform: translateX(-50%); z-index:10; box-shadow: 0 8px 16px rgba(16,185,129,0.3);">SPRINT 1</div>
             <div class="phone-ui-sprint" style="padding-top: 60px;">
@@ -601,27 +599,25 @@ p { font-size: clamp(16px, 1.6vw, 18px); line-height: 1.6; color: var(--muted); 
 
         <div>
           <div class="card" style="margin-bottom:24px; border-left: 4px solid var(--green);">
-            <h3>HU-1: Fondos en Tránsito</h3>
-            <div class="list-item" style="font-family:var(--mono); font-size:14px; color:var(--ink);">
-              <span style="color:var(--green)">DADO QUE</span> completé controles de retiro<br>
-              <span style="color:var(--green)">CUANDO</span> visualizo el home en periodo de liquidación<br>
-              <span style="color:var(--green)">ENTONCES</span> veo "Fondos en tránsito", la barra de progreso y fecha estimada.
+            <h3 style="margin-bottom: 12px;">HU-1: Fondos en Tránsito</h3>
+            <div style="font-family:var(--mono); font-size:15px; color:var(--ink); line-height: 1.8;">
+              <span style="color:var(--green); font-weight:700;">DADO QUE</span> completé controles de retiro<br>
+              <span style="color:var(--green); font-weight:700;">CUANDO</span> visualizo el home en periodo de liquidación<br>
+              <span style="color:var(--green); font-weight:700;">ENTONCES</span> veo "Fondos en tránsito", la barra de progreso y fecha estimada.
             </div>
           </div>
           <div class="card" style="border-left: 4px solid var(--green);">
-            <h3>HU-2: Lenguaje Claro</h3>
-            <div class="list-item" style="font-family:var(--mono); font-size:14px; color:var(--ink);">
-              <span style="color:var(--green)">DADO QUE</span> enfrento jerga legal obligatoria<br>
-              <span style="color:var(--green)">CUANDO</span> presiono el tooltip de ayuda<br>
-              <span style="color:var(--green)">ENTONCES</span> leo la traducción: "En máx 2 días hábiles tu dinero estará disponible".
+            <h3 style="margin-bottom: 12px;">HU-2: Lenguaje Claro</h3>
+            <div style="font-family:var(--mono); font-size:15px; color:var(--ink); line-height: 1.8;">
+              <span style="color:var(--green); font-weight:700;">DADO QUE</span> enfrento jerga legal obligatoria<br>
+              <span style="color:var(--green); font-weight:700;">CUANDO</span> presiono el tooltip de ayuda<br>
+              <span style="color:var(--green); font-weight:700;">ENTONCES</span> leo la traducción: "En máx 2 días hábiles tu dinero estará disponible".
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </section>
-
   <!-- SLIDE 10: METRICAS -->
   <section class="slide" data-speaker="ERICK">
     <div class="wrap">
