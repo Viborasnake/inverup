@@ -52,7 +52,7 @@
 *(Avanza a Slide 6)*
 **CRISTIAN:** Ahora, metodológicamente, la mejor solución UX fracasa si no alinea a los *stakeholders* corporativos. Mapeamos la matriz de Poder/Interés triangulando dolores reales que descubrimos en nuestra etapa de *Discovery*. 
 
-Por ejemplo, tras revisar los **OKRs anuales**, vimos que el CFO está desesperado por frenar el sangrado de activos bajo administración sin pedir presupuesto. Al entrevistar en **1 a 1** al Gerente de Riesgo, confirmamos que su mayor temor es un alza en los fraudes, y vetará cualquier intento de quitar el SMS. Al revisar el **Backlog** y la data de **Zendesk**, vimos a un equipo de Ingeniería sin horas para tocar el *core legacy*, y a una Gerente de CX colapsada por tickets.
+Por ejemplo, al realizar **entrevistas sintéticas** (simuladas con IA) con los *stakeholders* clave, descubrimos que el CFO está desesperado por frenar el sangrado de activos bajo administración sin pedir presupuesto. Además, el Gerente de Riesgo nos confirmó que su mayor temor es un alza en los fraudes, y vetará cualquier intento de quitar el SMS. Asimismo, identificamos a un equipo de Ingeniería sin horas para tocar el *core legacy*, y a una Gerente de CX colapsada por tickets en Zendesk.
 
 Con estos *insights* claros, diseñamos una táctica de **"No Oposición"**: decidimos conscientemente que nuestro Sprint 1 sea 100% UI y no toque la autenticación ni el motor bancario. Así, Riesgo e Ingeniería no tienen motivos para vetarnos, y le damos a Finanzas y CX el alivio inmediato que buscan.
 
