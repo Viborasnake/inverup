@@ -57,7 +57,7 @@ Por ejemplo, al realizar **entrevistas sintéticas** (simuladas con IA) con los 
 Con estos *insights* claros, diseñamos una táctica de **"No Oposición"**: decidimos conscientemente que nuestro Sprint 1 sea 100% UI y no toque la autenticación ni el motor bancario. Así, Riesgo e Ingeniería no tienen motivos para vetarnos, y le damos a Finanzas y CX el alivio inmediato que buscan.
 
 *(Avanza a Slide 7)*
-**CRISTIAN:** Además, para mitigar los riesgos de usar Inteligencia Artificial en textos legales, diseñamos flujos de *Definition of Ready* y *Definition of Done* automatizados. Ningún *copy* llega a producción sin la validación anti-alucinaciones y la firma de Compliance. Demostramos que podemos ganar agilidad sin saltarnos la gobernanza del banco.
+**CRISTIAN:** Además, para mitigar los riesgos de cambiar textos legales, diseñamos flujos de *Definition of Ready* y *Definition of Done* muy estrictos. Ningún *copy* de Lenguaje Claro llega a producción sin la revisión y firma de Compliance y Riesgo. Demostramos que podemos ganar agilidad UX sin saltarnos la gobernanza corporativa del banco.
 
 > 🛡️ **Respuestas de Respaldo (Q&A) para Cristian:**
 > - *Profesora: "¿Acaso no es cobarde no enfrentarse a Riesgo para quitar la foto del carnet?"*
