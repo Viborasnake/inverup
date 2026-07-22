@@ -1,6 +1,6 @@
 # Guion Sincrónico: Defensa del Caso InverUp
 
-**Instrucciones para el Equipo (Tríada):**
+**Instrucciones para el Equipo:**
 1. **Audiencia Real**: Están exponiendo frente a la profesora y la cátedra, **no** frente al directorio del banco. El objetivo es demostrar dominio de los *frameworks* ágiles y estratégicos para resolver una crisis real.
 2. **Ritmo y Fluidez**: El reloj de 10 minutos arranca automáticamente al pasar la portada. Mantengan un ritmo ágil y seguro.
 3. **Notas de Respaldo (🛡️)**: Usen estas respuestas para defender su razonamiento metodológico si la profesora les hace preguntas difíciles sobre por qué tomaron ciertas decisiones de producto.
